@@ -1,0 +1,98 @@
+
+service: fci-integracion-produccion
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-west-1
+  # iam:
+  #   Role:
+  iamRoleStatements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/CamaronConfiguracionTable
+            - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/CamaronValoresTable
+
+
+functions:
+  hello:
+    handler: src/handler.hello
+
+# Api de Camaron
+  CamaronAddValores:
+    handler: src/camaron/addValores.addValores
+    events:
+      - httpApi:
+          path: /camaronAddValores
+          method: post
+
+  CamaronGetBoxConfig:
+    handler: src/camaron/getBoxConfig.getBoxConfig
+    events:
+      - httpApi:
+          path: /camaronGetBoxConfig
+          method: get
+
+  CamaronGetValores:
+    handler: src/camaron/getValores.getValores
+    events:
+      - httpApi:
+          path: /camaronGetValores
+          method: post
+
+  CamaronSetBoxConfig:
+    handler: src/camaron/setBoxConfig.setBoxConfig
+    events:
+      - httpApi:
+          path: /camaronSetBoxConfig
+          method: post
+
+  CamaronGetAllValores:
+    handler: src/camaron/getAllValores.getAllValores
+    events:
+      - httpApi:
+          path: /camaronGetAllValores
+          method: get
+
+resources:
+  Resources:
+    CamaronValoresTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: CamaronValoresTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: fecha
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: fecha
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+          
+    CamaronConfiguracionTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: CamaronConfiguracionTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
