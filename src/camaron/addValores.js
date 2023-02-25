@@ -5,6 +5,17 @@ const { v4: uuidv4 } = require('uuid');
 // los guarda en dynamoDB 
 // consulta la configuracion de la caja
 // la configuracion de la caja
+// recive esta estructura
+// {
+//     "OXDIX" : 6,
+//     "TEMP": 4,
+//     "SAL" : 4,
+//     "PH": 3,
+//     "TURBIDEZ": 2,
+//     "TDS": 6,
+//     "LLUVIA": 0,
+//     "NIVEL": 1
+// }
 module.exports.addValores = async (event) => {
     const dynamoDbClient = new AWS.DynamoDB.DocumentClient();
     const nuevosValores = JSON.parse(event.body);

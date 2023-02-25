@@ -21,6 +21,9 @@ provider:
           Resource:
             - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/CamaronConfiguracionTable
             - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/CamaronValoresTable
+            - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/CamaronUsersTable
+            - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/CamaronReportesTable
+            - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/CamaronAlertasTable
 
 
 functions:
@@ -28,26 +31,12 @@ functions:
     handler: src/handler.hello
 
 # Api de Camaron
-  CamaronAddValores:
-    handler: src/camaron/addValores.addValores
-    events:
-      - httpApi:
-          path: /camaronAddValores
-          method: post
-
   CamaronGetBoxConfig:
     handler: src/camaron/getBoxConfig.getBoxConfig
     events:
       - httpApi:
           path: /camaronGetBoxConfig
           method: get
-
-  CamaronGetValores:
-    handler: src/camaron/getValores.getValores
-    events:
-      - httpApi:
-          path: /camaronGetValores
-          method: post
 
   CamaronSetBoxConfig:
     handler: src/camaron/setBoxConfig.setBoxConfig
@@ -56,12 +45,78 @@ functions:
           path: /camaronSetBoxConfig
           method: post
 
+
+
+  CamaronAddValores:
+    handler: src/camaron/addValores.addValores
+    events:
+      - httpApi:
+          path: /camaronAddValores
+          method: post
+
+  CamaronGetValores:
+    handler: src/camaron/getValores.getValores
+    events:
+      - httpApi:
+          path: /camaronGetValores
+          method: post
+
   CamaronGetAllValores:
     handler: src/camaron/getAllValores.getAllValores
     events:
       - httpApi:
           path: /camaronGetAllValores
           method: get
+
+
+
+  CamaronGetUsers:
+    handler: src/camaron/getUsers.getUsers
+    events:
+      - httpApi:
+          path: /camaronGetUsers
+          method: get
+
+  CamaronAddUser:
+    handler: src/camaron/addUser.addUser
+    events:
+      - httpApi:
+          path: /camaronAddUser
+          method: post
+
+
+
+  CamaronGetReportes:
+    handler: src/camaron/getReportes.getReportes
+    events:
+      - httpApi:
+          path: /camaronGetReportes
+          method: get
+
+  CamaronAddReporte:
+    handler: src/camaron/addReporte.addReporte
+    events:
+      - httpApi:
+          path: /camaronAddReporte
+          method: post
+
+
+
+  CamaronAddAlerta:
+    handler: src/camaron/addAlerta.addAlerta
+    events:
+      - httpApi:
+          path: /camaronAddAlerta
+          method: post
+
+  CamaronGetAlertas:
+    handler: src/camaron/getAlertas.getAlertas
+    events:
+      - httpApi:
+          path: /camaronGetAlertas
+          method: get
+
+
 
 resources:
   Resources:
@@ -93,6 +148,56 @@ resources:
         KeySchema:
           - AttributeName: id
             KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    
+    CamaronUsuariosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: CamaronUsersTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: user
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: user
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    
+    CamaronReportesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: CamaronReportesTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    
+    CamaronAlertasTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: CamaronAlertasTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: fecha
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: fecha
+            KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
