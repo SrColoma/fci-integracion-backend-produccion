@@ -9,6 +9,11 @@ provider:
   region: us-west-1
   # iam:
   #   Role:
+  cors:
+    origins: "*"
+    headers:
+      - Content-Type
+    allowCredentials: true
   iamRoleStatements:
         - Effect: Allow
           Action:
@@ -24,6 +29,7 @@ provider:
             - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/CamaronUsersTable
             - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/CamaronReportesTable
             - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/CamaronAlertasTable
+            - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/CamaronPiscinasTable
 
 
 functions:
@@ -118,6 +124,33 @@ functions:
 
 
 
+  CamaronGetPiscinas:
+    handler: src/camaron/getPiscinas.getPiscinas
+    events:
+      - httpApi:
+          path: /camaronGetPiscinas
+          method: get
+
+  CamaronAddPiscinas:
+    handler: src/camaron/addPiscina.addPiscina
+    events:
+      - httpApi:
+          path: /CamaronAddPiscina
+          method: post
+      
+
+  EnviarMail:
+    handler: src/camaron/enviarEmail.enviarEmail
+    events:
+      - httpApi:
+          path: /enviarEmail
+          method: post
+          cors: true
+          response:
+            headers:
+              Access-Control-Allow-Origin: "'*'"
+
+
 resources:
   Resources:
     CamaronValoresTable:
@@ -188,6 +221,24 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: CamaronAlertasTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: fecha
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: fecha
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    
+    CamaronPiscinasTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: CamaronPiscinasTable
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S

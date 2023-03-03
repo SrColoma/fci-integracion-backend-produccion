@@ -9,6 +9,7 @@ const { v4: uuidv4 } = require('uuid');
 // {
 //      "user": "admin",
 //      "password": "admin",
+//      "email": "user@gmail.com"
 //      "rol": "admin"
 // }
 
@@ -19,6 +20,7 @@ module.exports.addUser = async (event) => {
         id: uuidv4(),
         user: newUser.user,
         password: newUser.password,
+        email: newUser.email,
         rol: newUser.rol,
     }
 

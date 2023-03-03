@@ -1,4 +1,5 @@
 const AWS = require('aws-sdk');
+const moment = require('moment-timezone');
 
 
 //recive un json con la nueva configuracion de la caja
@@ -45,7 +46,7 @@ module.exports.setBoxConfig = async (event) => {
         UpdateExpression: "set configuracion = :configuracion, fecha = :fecha",
         ExpressionAttributeValues: {
             ":configuracion": nuevaConfiguracion,
-            ":fecha": new Date().toISOString(),
+            ":fecha": moment.tz('America/Guayaquil').format(),//new Date().toISOString(),
         },
         ReturnValues: "UPDATED_NEW",
     }).promise().catch((err) => {

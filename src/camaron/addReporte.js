@@ -1,4 +1,5 @@
 const AWS = require('aws-sdk');
+const moment = require('moment-timezone');
 const { v4: uuidv4 } = require('uuid');
 
 // recive un nuevo reporte por post
@@ -14,7 +15,7 @@ module.exports.addReporte = async (event) => {
     const newReporte = JSON.parse(event.body);
     const reporte = {
         id: uuidv4(),
-        fechaCreacion: new Date().toISOString(),
+        fechaCreacion: moment.tz('America/Guayaquil').format(),//new Date().toISOString(),
         inicio: newReporte.inicio,
         fin: newReporte.fin,
         piscina: newReporte.piscina,
